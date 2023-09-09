@@ -1,0 +1,3 @@
+describe('central_pixel', () => {
+    
+});

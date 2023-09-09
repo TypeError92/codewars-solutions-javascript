@@ -1,5 +1,7 @@
 # Centre of Attention: Solution
 
+
+
 ## Theory
 There is only minimal maths involved here in calculating neighbours and determining whether a given pixel is on the edge of the image.
 
@@ -35,3 +37,66 @@ This time, we _will_ keep track of the current maximum depth in order to avoid f
 This should work. The indices in our final array will be in reverse order, but the instructions make it clear that we needn't worry about that.
 
 Let's do this!
+
+## Implementation
+
+### First draft
+
+<img src='https://www.stat.auckland.ac.nz/~geoff/codewars/pixeldepthspic.png'>
+
+
+#### Conversion
+
+For our first draft, let's make our lives a bit easier and represent our data as a 2-dimensional matrix rather than a 1-dimensional array.
+
+**NOTE:** Although each pixel is uniquely identified by a pair of "coordinates" (i, j), these are not to be confused with its x and y coordinates within the picture. (We're counting TL-BR)
+
+#### First iteration
+There is no way around it: we need to iterate over the entire array of pixels to start with.
+
+After the first iteration, we get the following initial results for our example:
+
+        [
+            [1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 2, 1, 1, 0, 0, 0, 0, 0, 0],
+            [1, 2, 2, 1, 0, 0, 0, 0, 0, 0],
+            [1, 2, 3, 2, 1, 0, 0, 0, 0, 0],
+            [1, 2, 3, 3, 1, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 0, 0, 0, 0]
+        ]
+
+That's already pretty good! The only incorrect values at this point are (4, 2) and (4, 3), which should have a depth of 2. Since the shortest path to an edge or a pixel of a different colour must start with either a step right or a step down, we could not detect it during the first iteration.  
+
+#### Second iteration
+
+During the second iteration, we want to achieve two things:  
+1. We want to fix any incorrect values in our initial array. For this purpose, we are going to iterate _backwards_ this time. Note that we don't even have to look at the original array anymore.
+2. We want to keep track of the central pixels, i.e. those with the highest depth.
+
+
+
+After the second loop, our `depths` matrix looks like this:
+
+    [
+      [1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+      [1, 2, 1, 1, 0, 0, 0, 0, 0, 0],
+      [1, 2, 2, 1, 0, 0, 0, 0, 0, 0],
+      [1, 2, 3, 2, 1, 0, 0, 0, 0, 0],
+      [1, 2, 2, 2, 1, 0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1, 1, 0, 0, 0, 0]
+    ]
+
+Spot on! Now all we have to do is find all occurrences of the highest value and, in this solution, translate their 2D coordinates back into a 1D index. We could, of course, use another loop here, but that's actually not necessary - we can already do that during our second loop:
+
+_Et voilà_, our solution passes not only the sample tests indeed the kata autor's full test suite (which, as per the instructions, includes a `Big_Test` suite using a 16-megapixel image in the JS version). Completion took **1226ms** for my first attempt, which are spread across the 5 test suites as follows:
+| Test Suite | Completion Time |
+| --- | --- |
+| Example_In_The_Picture | 3ms |
+| Circular_Disc_Test | 11ms |
+| Diagonal_Test | 3ms |
+| Random_Tests | 35ms |
+| Big_Test | 1174ms |
+
+### Refactoring & Optimisation
+#### Skipping the coversion
+As already pointed out, converting the input into a 2D matrix only

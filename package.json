@@ -1,5 +1,9 @@
 {
   "devDependencies": {
     "jest": "^29.6.4"
+  },
+  "scripts": {
+    "pretest": "clear",
+    "test": "jest"
   }
 }

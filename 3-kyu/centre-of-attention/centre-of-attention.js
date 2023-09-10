@@ -6,13 +6,13 @@ function central_pixels(image, colour) {
     rows.push(image.pixels.slice(i * w, (i + 1) * w));
   }
 
-  // First iteration
+  // First loop
   const depths = [];
   let depth = 0;
   rows.forEach((row, i) => {
     depths.push([]);
     row.forEach((pixel, j) => {
-      // Ignore all pixels of other colours
+      // Set dummy value for all pixels of colours other than the specified one
       if (pixel !== colour) depth = 0;
       else if (
         // Check if the pixel is on an edge
@@ -32,7 +32,7 @@ function central_pixels(image, colour) {
     });
   });
 
-  // Second iteration
+  // Second loop
   let maxDepth = 1;
   let centralPixels = [];
 
@@ -40,7 +40,9 @@ function central_pixels(image, colour) {
     const depthRow = depths[i];
     for (let j = w - 1; j >= 0; j--) {
       let pixelDepth = depthRow[j];
+      // Ignore pixels of other colours
       if (pixelDepth) {
+        // Check for shorter paths to the bottom and to the right and correct depth if necessary
         if (pixelDepth > 1) {
           const minDepthBR = Math.min(depths[i + 1][j], depths[i][j + 1]);
           if (minDepthBR < pixelDepth - 1) {
